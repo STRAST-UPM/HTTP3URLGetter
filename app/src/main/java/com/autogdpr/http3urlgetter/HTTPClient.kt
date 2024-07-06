@@ -58,7 +58,6 @@ class HTTPClient(private val applicationContext: Context) {
         ).addHeader("Quic-Protocol", "quic/h3")
 
         val request = requestBuilder.build()
-        //printCustomStackTrace()
         request.start()
 
         // Este método probablemente debería devolver algo asíncrono
@@ -99,16 +98,14 @@ class HTTPClient(private val applicationContext: Context) {
             Log.d("HTTPClient", "Request succeeded")
             printCustomStackTrace()
             responseBody = buffer.toString()
+
+            if (info?.negotiatedProtocol != null) {
+                protocol = info.negotiatedProtocol
+            } else {
+                protocol = URI.create(url).scheme
+            }
             Log.d("HTTPClient", "Response Body: $responseBody")
-
-            val uri = URI.create(url)
-            protocol = uri.scheme
             Log.d("HTTPClient", "Protocol: $protocol")
-
-
-            // Notificar el resultado al callback
-            // Este es un ejemplo, necesitas adaptarlo para tu aplicación
-            // Por ejemplo, podrías usar un LiveData para comunicar el resultado a la actividad
         }
 
         override fun onFailed(request: UrlRequest?, info: UrlResponseInfo?, errorInfo: CronetException?) {
